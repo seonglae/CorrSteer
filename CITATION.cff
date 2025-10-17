@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use CorrSteer, please cite it."
+title: "CorrSteer: Generation-Time LLM Steering via Correlated Sparse Autoencoder Features"
+authors:
+  - family-names: Cho
+    given-names: Seonglae
+    affiliation: "University College London, Holistic AI"
+  - family-names: Wu
+    given-names: Zekun
+    affiliation: "University College London, Holistic AI"
+  - family-names: Koshiyama
+    given-names: Adriano
+    affiliation: "University College London, Holistic AI"
+version: 0.1.0
+date-released: 2025-01-15
+url: "https://github.com/seonglae/CorrSteer"
+repository-code: "https://github.com/seonglae/CorrSteer"
+license: MIT
+keywords:
+  - language models
+  - sparse autoencoders
+  - feature steering
+  - interpretability
+  - correlation
