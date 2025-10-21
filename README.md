@@ -2,6 +2,7 @@
 
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Demo-yellow)](https://huggingface.co/spaces/seonglae/CorrSteer)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Slides](https://img.shields.io/badge/PPT-Slidev-skyblue.svg)](https://corrsteer.vercel.app/)
 
 Implementation of CorrSteer, a generation-time steering method using correlated Sparse Autoencoder (SAE) features.
 
