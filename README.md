@@ -6,14 +6,14 @@
 
 Implementation of CorrSteer, a generation-time steering method using correlated Sparse Autoencoder (SAE) features.
 
-## 🎯 Key Features
+## Key Features
 
 - **Correlation-based feature selection** from generation-time activations
 - **Streaming computation** with O(1) memory complexity
 - **Multi-layer strategies** (CorrSteer-S/A/P)
 - **Side Effect Ratio (SER)** for measuring unintended changes
 
-## 🚀 Setup
+## Setup
 
 Install [Astral UV](https://github.com/astral-sh/uv):
 ```bash
@@ -27,7 +27,7 @@ source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv pip install -e .
 ```
 
-## 📖 Usage
+## Usage
 
 ### Training
 
@@ -74,7 +74,7 @@ python train.py train --task=mmlu --layer=foreach --eval
 python train.py train --task=mmlu --layer=foreach --validate --eval
 ```
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 corrsteer/
@@ -90,11 +90,11 @@ sft.py              # Supervised fine-tuning
 ```
 
 
-## 📄 License
+## License
 
 MIT License - see [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [SAE Lens](https://github.com/jbloomAus/SAELens) for SAE implementation
 - [Gemma Scope](https://huggingface.co/google/gemma-scope-2b-pt-res) for pretrained SAEs
