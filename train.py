@@ -470,6 +470,9 @@ class CorrConfig(BaseModel):
   fisher: bool = False
   caa: bool = False
   caacoeff: bool = False
+  # Ablation controls
+  shuffle_labels: bool = False  # Permute labels for selection bias test
+  random_features: bool = False  # Select random features instead of top correlated
 
   def __post_init__(self):
     if self.pos and self.neg:
@@ -706,6 +709,10 @@ class CorrSteerController:
       generated_texts = self.tokenizer.batch_decode(sliced, skip_special_tokens=True)
       rewards = self._compute_rewards(generated_texts, list(gts))
       batch_y = torch.tensor(rewards, dtype=torch.float32, device=self.device)
+      # Selection bias control: shuffle labels to test if correlation is spurious
+      if self.config.shuffle_labels:
+        perm = torch.randperm(batch_y.size(0), device=self.device)
+        batch_y = batch_y[perm]
       for layer in self.layers:
         capture_hook = capture_hooks[layer]
         if capture_hook.buffer is None:
@@ -780,6 +787,10 @@ class CorrSteerController:
       generated_texts = self.tokenizer.batch_decode(sliced, skip_special_tokens=True)
       rewards = self._compute_rewards(generated_texts, list(gts))
       batch_y = torch.tensor(rewards, dtype=torch.float32, device=self.device)
+      # Selection bias control: shuffle labels to test if correlation is spurious
+      if self.config.shuffle_labels:
+        perm = torch.randperm(batch_y.size(0), device=self.device)
+        batch_y = batch_y[perm]
       for layer in self.layers:
         capture_hook = capture_hooks[layer]
         if capture_hook.buffer is not None:
@@ -927,6 +938,27 @@ class CorrSteerController:
 
       top_positive = build_topk(mask_pos, cfg.topk)
       top_negative = build_topk(mask_neg, cfg.topk)
+
+      # Selection bias control: replace with random features
+      if cfg.random_features and len(top_positive) > 0:
+        import random as py_random
+        # Get all positive-correlated feature indices
+        pos_indices = mask_pos.nonzero(as_tuple=True)[0].tolist()
+        if len(pos_indices) >= len(top_positive):
+          random_indices = py_random.sample(pos_indices, len(top_positive))
+          top_positive = []
+          for i in random_indices:
+            base_coeff = accumulator.mean_coefficient(i)
+            freq = accumulator.frequency_percent(i)
+            stat = {
+              "freq_correct": accumulator.frequency_percent_correct(i),
+              "freq_incorrect": accumulator.frequency_percent_incorrect(i),
+              "coeff_success": accumulator.mean_coefficient_success(i),
+              "coeff_failure": accumulator.mean_coefficient_failure(i),
+            }
+            corr_val = float(r[i].item())
+            top_positive.append((i, float(base_coeff), corr_val, freq, stat))
+
       # For storage: also assemble top lists without masking for analysis
       top_positive_all = top_positive
       top_negative_all = top_negative
