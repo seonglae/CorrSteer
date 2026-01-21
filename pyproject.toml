@@ -6,6 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "corrsteer"
 version = "0.1.0"
 description = "Reinforcement Learning for Language Model Steering"
+requires-python = ">=3.10"
 authors = []
 dependencies = [
     "torch>=2.0.0",
@@ -25,8 +26,15 @@ dependencies = [
     "sentence-transformers>=2.7.0"
 ]
 
+[project.optional-dependencies]
+dev = ["ruff", "pytest"]
+
 [tool.setuptools.packages.find]
 include = ["corrsteer"]
 
 [tool.ruff]
 indent-width = 2
+
+[tool.uv]
+index-url = "https://download.pytorch.org/whl/cu128"
+extra-index-url = ["https://pypi.org/simple"]
