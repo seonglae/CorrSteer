@@ -124,9 +124,15 @@ class HarmBenchDataLoader(DataLoader):
     super().__init__(dataset, split=split, limit=limit)
 
   def apply_row(self, sample) -> SampleData:
+    metadata = {}
+    if "SemanticCategory" in sample:
+      metadata["category"] = sample["SemanticCategory"]
+    if "FunctionalCategory" in sample:
+      metadata["functional_category"] = sample["FunctionalCategory"]
     return {
       "question": f"{sample['context']}\n{sample['prompt']}" if sample['context'] else sample['prompt'],
       "answer": "",
+      "metadata": metadata if metadata else None,
     }
 
 
@@ -135,7 +141,24 @@ class XSTestDataLoader(DataLoader):
     super().__init__(dataset, split=split, limit=limit)
 
   def apply_row(self, sample) -> SampleData:
+    metadata = {}
+    if "type" in sample:
+      metadata["type"] = sample["type"]
+    if "note" in sample:
+      metadata["note"] = sample["note"]
     return {
       "question": sample["prompt"],
-      "answer": sample["label"]
+      "answer": sample["label"],
+      "metadata": metadata if metadata else None,
+    }
+
+
+class MathDataLoader(DataLoader):
+  def __init__(self, dataset, split=None, limit=None):
+    super().__init__(dataset, split=split, limit=limit)
+
+  def apply_row(self, sample) -> SampleData:
+    return {
+      "question": sample["problem"],
+      "answer": sample["solution"],
     }
