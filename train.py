@@ -1052,23 +1052,29 @@ class CorrSteerController:
         best_layer = None
         best_feature = None
         for layer in layers:
+          if str(layer) not in layer_results:
+            continue
           selected = layer_results[str(layer)]["selected"]
           correlation = abs(selected["correlation"])
           if correlation > best_correlation:
             best_correlation = correlation
             best_layer = layer
             best_feature = selected
-        layer_results[str(best_layer)]["selected"] = best_feature
-        steering_layers = layers
-        feat_type = "positive" if best_feature["coefficient"] > 0 else "negative"
-        if cfg.validate:
-          baseline_acc = self._validate_baseline(train_loader, val_loader, max_new_tokens, layers)
-          best_accuracy, feature_info = self._validate_layer_features(
-            best_layer, layer_results[str(best_layer)], train_loader, val_loader, max_new_tokens
-          )
-          if isinstance(self.config.layer, int) and self.config.stable:
-            best_feature = feature_info
-            layer_results[str(best_layer)]["selected"] = best_feature
+        if best_layer is None:
+          print("Warning: No valid layers found (expected for shuffle_labels control)")
+          steering_layers = []
+        else:
+          layer_results[str(best_layer)]["selected"] = best_feature
+          steering_layers = layers
+          feat_type = "positive" if best_feature["coefficient"] > 0 else "negative"
+          if cfg.validate:
+            baseline_acc = self._validate_baseline(train_loader, val_loader, max_new_tokens, layers)
+            best_accuracy, feature_info = self._validate_layer_features(
+              best_layer, layer_results[str(best_layer)], train_loader, val_loader, max_new_tokens
+            )
+            if isinstance(self.config.layer, int) and self.config.stable:
+              best_feature = feature_info
+              layer_results[str(best_layer)]["selected"] = best_feature
       elif cfg.validate:
         print(f"Validating layers on validation set ({val_loader.n_samples} samples)...")
         baseline_acc = self._validate_baseline(train_loader, val_loader, max_new_tokens, layers)
@@ -1077,6 +1083,8 @@ class CorrSteerController:
         best_layer = None
         best_feature = None
         for layer in layers:
+          if str(layer) not in layer_results:
+            continue
           accuracy, feature_info = self._validate_layer_features(layer, layer_results[str(layer)], train_loader, val_loader, max_new_tokens)
           if isinstance(self.config.layer, int) and self.config.stable:
             pos_feat = feature_info["positive"]
@@ -1095,6 +1103,8 @@ class CorrSteerController:
         best_layer = None
         best_feature = None
         for layer in layers:
+          if str(layer) not in layer_results:
+            continue
           feature_info = self._select_best_feature_by_correlation(layer_results[str(layer)])
           abs_corr = abs(feature_info["correlation"])
           feat_type = "positive" if feature_info["coefficient"] > 0 else "negative"
@@ -1103,9 +1113,16 @@ class CorrSteerController:
             best_abs_corr = abs_corr
             best_layer = layer
             best_feature = feature_info
-        layer_results[str(best_layer)]["selected"] = best_feature
-        steering_layers = layers
-      if cfg.validate and isinstance(self.config.layer, int) and self.config.stable:
+        if best_layer is None:
+          print("Warning: No valid layers found (expected for shuffle_labels control)")
+          steering_layers = []
+        else:
+          layer_results[str(best_layer)]["selected"] = best_feature
+          steering_layers = layers
+      if best_layer is None:
+        print("Warning: No valid layers found for global mode (expected for shuffle_labels control)")
+        steering_layers = []
+      elif cfg.validate and isinstance(self.config.layer, int) and self.config.stable:
         best_layer_result = {
           "top_positive": layer_results[str(best_layer)]["top_positive"],
           "top_negative": layer_results[str(best_layer)]["top_negative"],
@@ -1131,6 +1148,8 @@ class CorrSteerController:
         validated_layers = []
         validated_results = {}
         for layer in layers:
+          if str(layer) not in layer_results:
+            continue
           accuracy, feature_info = self._validate_layer_features(layer, layer_results[str(layer)], train_loader, val_loader, max_new_tokens)
           if accuracy > baseline_acc:
             validated_layers.append(layer)
@@ -1150,6 +1169,8 @@ class CorrSteerController:
       elif cfg.pos or cfg.neg:
         steering_layers = layers
         for layer in layers:
+          if str(layer) not in layer_results:
+            continue
           selected = layer_results[str(layer)]["selected"]
           feat_type = "positive" if selected["coefficient"] > 0 else "negative"
           print(f"Layer {layer}: Using {feat_type} feature {selected['feature_index']} with correlation {selected['correlation']:.4f}")
@@ -1157,6 +1178,8 @@ class CorrSteerController:
         print("Selecting best features by correlation for each layer (no validation)...")
         steering_layers = layers
         for layer in layers:
+          if str(layer) not in layer_results:
+            continue
           feature_info = self._select_best_feature_by_correlation(layer_results[str(layer)])
           layer_results[str(layer)]["selected"] = feature_info
           feat_type = "positive" if feature_info["coefficient"] > 0 else "negative"
@@ -1167,10 +1190,14 @@ class CorrSteerController:
       if len(layers) == 1:
         layer = layers[0]
         print(f"Single layer mode: Layer {layer}")
-        print(f"Validating layer {layer} on validation set ({val_loader.n_samples} samples)...")
-        baseline_acc = self._validate_baseline(train_loader, val_loader, max_new_tokens, layers)
-        print(f"Baseline accuracy: {baseline_acc:.2f}%")
-        selected = layer_results[str(layer)]["selected"]
+        if str(layer) not in layer_results:
+          print(f"Warning: Layer {layer} has no results (expected for shuffle_labels control)")
+          steering_layers = []
+        else:
+          print(f"Validating layer {layer} on validation set ({val_loader.n_samples} samples)...")
+          baseline_acc = self._validate_baseline(train_loader, val_loader, max_new_tokens, layers)
+          print(f"Baseline accuracy: {baseline_acc:.2f}%")
+          selected = layer_results[str(layer)]["selected"]
         feat_idx = selected["feature_index"]
         coeff = selected["coefficient"]
         accuracy = self._validate_feature(layer, feat_idx, coeff, train_loader, val_loader, max_new_tokens, collect_examples=True)
