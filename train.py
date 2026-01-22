@@ -982,7 +982,8 @@ class CorrSteerController:
       elif top_neg_info:
         selected = {"feature_index": top_neg_info["feature_index"], "coefficient": -abs(top_neg_info["coefficient"]), "correlation": top_neg_info["correlation"], "frequency": top_neg_info["frequency"], "stats": top_neg_info["stats"]}
       else:
-        raise ValueError(f"No valid features found for layer {layer}")
+        print(f"Warning: No valid features found for layer {layer} (expected for shuffle_labels)")
+        continue
       layer_results[str(layer)] = {
         "top_positive": [{"feature_index": idx, "coefficient": float(coeff * cfg.scale), "correlation": corr, "frequency": freq, "stats": stats} 
                         for idx, coeff, corr, freq, stats in top_positive_all],
@@ -993,6 +994,9 @@ class CorrSteerController:
       pos_str = f"pos {top_positive[0][0]} r={top_positive[0][2]:.4f}" if len(top_positive) > 0 else "pos None"
       neg_str = f"neg {top_negative[0][0]} r={top_negative[0][2]:.4f}" if len(top_negative) > 0 else "neg None"
       print(f"Layer {layer}: {pos_str}, {neg_str}")
+    if not layer_results:
+      print("Warning: No valid features found in any layer. This is expected for shuffle_labels control experiment.")
+      layer_results["_no_features"] = True
     if self.config.eval and self.snapshots:
       for ckpt, snap in self.snapshots.items():
         try:
