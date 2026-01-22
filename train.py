@@ -746,7 +746,7 @@ class CorrSteerController:
             print(f"Layer {layer}: pos None, neg {top_neg_idx} r={top_neg_r:.4f}")
           else:
             print(f"Layer {layer}: pos None, neg None")
-        if self.config.eval:
+        if self.config.eval and total_processed >= self.config.num_samples:
           self.snapshots[str(total_processed)] = {}
           for layer in self.layers:
             s_top_positive, _ = self.accumulators[layer].top_features(1)
