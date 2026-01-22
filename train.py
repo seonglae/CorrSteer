@@ -1234,11 +1234,37 @@ class CorrSteerController:
         json.dump(self.snapshots, f, indent=2)
       print(f"Progress saved to {progress_path}")
     eval_controller = EvalController()
-    selected_layers = layer_results 
+    selected_layers = layer_results
     if cfg.layer == "global":
-      selected_layers = {str(k): {"selected": layer_results[str(k)]["selected"]} for k in layers}
+      selected_layers = {str(k): {"selected": layer_results[str(k)]["selected"]} for k in layers if str(k) in layer_results}
     elif cfg.layer == "foreach":
-      selected_layers = {str(k): {"selected": layer_results[str(k)]["selected"]} for k in steering_layers}
+      selected_layers = {str(k): {"selected": layer_results[str(k)]["selected"]} for k in steering_layers if str(k) in layer_results}
+    # Handle case where no valid features were found (e.g., shuffle_labels control)
+    if not selected_layers or "_no_features" in layer_results:
+      print("Skipping evaluation: No valid features found (expected for shuffle_labels control)")
+      eval_stats = type('obj', (object,), {'accuracy': 0.0, 'output_json': None})()
+      accuracy_path = save_path.replace(".json", "_accuracy.json")
+      accuracy_result = {
+        "model": cfg.model,
+        "task": cfg.task,
+        "mode": cfg.layer,
+        "steers": [],
+        "accuracy": 0.0,
+        "samples": cfg.num_samples,
+        "output": None,
+        "note": "No valid features found (shuffle_labels control experiment)"
+      }
+      with open(accuracy_path, 'w') as f:
+        json.dump(accuracy_result, f, indent=2)
+      print(f"Control experiment result saved to {accuracy_path}")
+      return {
+        "path": save_path,
+        "mode": cfg.layer,
+        "steers": [],
+        "results": layer_results,
+        "accuracy": 0.0,
+        "output": None,
+      }
     eval_stats = eval_controller.fixed_feature(
       layer_results=selected_layers,
       model=cfg.model,
