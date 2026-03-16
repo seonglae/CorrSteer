@@ -1,4 +1,5 @@
 # CorrSteer: Generation-Time LLM Steering via Correlated Sparse Autoencoder Features
+![corrsteer](https://github.com/user-attachments/assets/8785875e-d431-44b3-9bcc-01df174845f2)
 
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Demo-yellow)](https://huggingface.co/spaces/seonglae/CorrSteer)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
