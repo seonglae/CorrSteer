@@ -1,6 +1,8 @@
 # CorrSteer: Generation-Time LLM Steering via Correlated Sparse Autoencoder Features
 ![corrsteer](https://github.com/user-attachments/assets/8785875e-d431-44b3-9bcc-01df174845f2)
 
+[![arXiv](https://img.shields.io/badge/arXiv-2508.12535-b31b1b.svg)](https://arxiv.org/abs/2508.12535)
+[![Article](https://img.shields.io/badge/Article-seongland.com-blue)](https://seongland.com/article/corrsteer)
 [![HuggingFace](https://img.shields.io/badge/🤗%20HuggingFace-Demo-yellow)](https://huggingface.co/spaces/seonglae/CorrSteer)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Slides](https://img.shields.io/badge/PPT-Slidev-skyblue.svg)](https://corrsteer.vercel.app/)
@@ -108,6 +110,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
   title={{CorrSteer}: Generation-Time {LLM} Steering via Correlated Sparse Autoencoder Features},
   author={Cho, Seonglae and Wu, Zekun and Koshiyama, Adriano},
   booktitle={Proceedings of the 43rd International Conference on Machine Learning (ICML)},
-  year={2026}
+  year={2026},
+  url={https://seongland.com/article/corrsteer}
 }
 ```
