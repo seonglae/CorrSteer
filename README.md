@@ -100,3 +100,14 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [SAE Lens](https://github.com/jbloomAus/SAELens) for SAE implementation
 - [Gemma Scope](https://huggingface.co/google/gemma-scope-2b-pt-res) for pretrained SAEs
 - [HuggingFace](https://huggingface.co/) for model hosting
+
+## Citation
+
+```bibtex
+@inproceedings{cho2026corrsteer,
+  title={{CorrSteer}: Generation-Time {LLM} Steering via Correlated Sparse Autoencoder Features},
+  author={Cho, Seonglae and Wu, Zekun and Koshiyama, Adriano},
+  booktitle={Proceedings of the 43rd International Conference on Machine Learning (ICML)},
+  year={2026}
+}
+```
